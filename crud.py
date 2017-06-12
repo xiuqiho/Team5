@@ -1,55 +1,107 @@
-#!flask/bin/python
-from flask import Flask, jsonify, request
+#!flask/bin/python 
+from flask import Flask,jsonify, abort, request
 import subprocess
 
 app = Flask(__name__)
-child = subprocess.Popen('cat bridge.json',stdout=subprocess.PIPE,shell=True)
-output = child.communicate()[0]
-tasks = output
 
-@app.route('/todo/api/v1.0/tasks', methods=['POST'])
-def create_loop():
-	cloop = 'sudo vppctl loopback create-interface'
-	subprocess.call(cloop,shell=True)
-	return ''
+spcs = subprocess.Popen('cat showintresult.json', stdout=subprocess.PIPE, shell=True)
+result = spcs.communicate()[0]
 
-@app.route('/todo/api/v1.0/tasks', methods=['DELETE'])
-def delete_loop():
-	if not request.json or not 'Name' in request.json:
-		abort(400)
-	task = {'Name': request.json['Name']}
-	loopint = str(request.json['Name'])
-	dloop = 'sudo vppctl loopback delete-interface intfc %s' % (loopint)
-	subprocess.call(dloop,shell=True)
-	return ''
+tasks = result
 
-@app.route('/todo/api/v1.0/tasks', methods=['PUT'])
-def update_bridge():
-	if not request.json or not 'id' in request.json:
-		abort(400)
-	task = {'id': request.json['id']}
-	bridge = str(request.json['id'])
-	upbridge = 'sudo vppctl set bridge-domain forward %s' % (bridge)
-	subprocess.call(upbridge,shell=True)
-	#update json file
-	update = "python read.py"
-	subprocess.call(update,shell=True)
-	#update flask
-	nchild = subprocess.Popen('cat bridge.json',stdout=subprocess.PIPE,shell=True)
-	noutput = nchild.communicate()[0]
-	tasks = noutput
-	return tasks
 
+#Read
 @app.route('/todo/api/v1.0/tasks', methods=['GET'])
 def get_tasks():
-	#update json file
-        update = "python read.py"
-        subprocess.call(update,shell=True)
-        #update flask
-        nchild = subprocess.Popen('cat bridge.json',stdout=subprocess.PIPE,shell=True)
-        noutput = nchild.communicate()[0]
-        tasks = noutput
 	return tasks
+
+
+#Delete	
+@app.route('/todo/api/v1.0/tasks', methods=['DELETE'])
+def del_task():
+	if not request.json or not 'Name' in request.json:
+		abort(400)
+
+	task = {
+		'Name': request.json['Name']
+	}
+
+	host = str(request.json['Name'])
+	deletecommand = 'sudo vppctl delete host-interface name %s' % (host)
+	subprocess.call(deletecommand, stdout=subprocess.PIPE, shell = True)
+
+	#Update json file
+	updatejsonfile = "python showint.py"
+	subprocess.call(updatejsonfile, shell = True)
+
+	#Update flask
+	ncps = subprocess.Popen('cat showintresult.json', stdout=subprocess.PIPE, shell = True)
+	noutput = ncps.communicate()[0]
+	tasks = noutput
+
+	return tasks
+
+	
+	
+#Create
+@app.route('/todo/api/v1.0/tasks', methods=['POST'])
+def create_task():
+
+	if not request.json or not 'Name' in request.json:
+		abort(400)
+
+	task = {
+		'Name': request.json['Name']
+	}
+
+	hostname = str(request.json['Name'])
+	addcommand = 'sudo vppctl create host-interface name %s' % (hostname)
+	subprocess.call(addcommand,stdout=subprocess.PIPE, shell = True)
+
+	#Update json file
+	updatejsonfile = "python showint.py"
+	subprocess.call(updatejsonfile, shell = True)
+
+	#Update flask
+	ncps = subprocess.Popen('cat showintresult.json', stdout=subprocess.PIPE, shell = True)
+	noutput = ncps.communicate()[0]
+	tasks = noutput
+
+	return tasks
+
+
+	
+	
+#Update
+@app.route('/todo/api/v1.0/tasks', methods=['UPDATE'])
+def delete_task():
+
+	if not request.json or not 'Name' in request.json:
+		abort(400)
+	if not request.json or not 'State' in request.json:
+		abort(400)
+
+	task = {
+		'Name': request.json['Name'],
+		'State': request.json['State']
+	}
+
+	name = str(request.json['Name'])
+	state = str(request.json['State'])
+	addint = 'sudo vppctl set interface state %s %s' % (name, state)
+	subprocess.call(addint, stdout=subprocess.PIPE, shell = True)
+
+	#Update JSON File
+	updatejsonfile = "python showint.py"
+	subprocess.call(updatejsonfile, shell = True)
+
+	#Update Flask
+	npcs = subprocess.Popen('cat showintresult.json', stdout=subprocess.PIPE, shell = True)
+	noutput = npcs.communicate()[0]
+	tasks = noutput
+
+	return tasks
+
+
 if __name__ == '__main__':
 	app.run(debug=True)
-
