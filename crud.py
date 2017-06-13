@@ -1,23 +1,40 @@
 #!flask/bin/python 
-from flask import Flask,jsonify, abort, request
+from flask.ext.httpauth import HTTPBasicAuth
+from flask import Flask, jsonify, abort, request, make_response
 import subprocess
 
 app = Flask(__name__)
+auth = HTTPBasicAuth()
 
-spcs = subprocess.Popen('cat showintresult.json', stdout=subprocess.PIPE, shell=True)
+
+@auth.get_password
+def get_password(username):
+	if username == 'xiuqi':
+		return 'sti'
+	return None
+
+
+@auth.error_handler
+def unauthorized():
+	return make_response(jsonify({'error': 'Unauthorized Access'}), 403)
+
+
+
+spcs = subprocess.Popen('cat showintresult.json',stdout=subprocess.PIPE,shell=True)
 result = spcs.communicate()[0]
 
 tasks = result
 
 
-#Read
+
 @app.route('/todo/api/v1.0/tasks', methods=['GET'])
+@auth.login_required
 def get_tasks():
 	return tasks
 
 
-#Delete	
 @app.route('/todo/api/v1.0/tasks', methods=['DELETE'])
+@auth.login_required
 def del_task():
 	if not request.json or not 'Name' in request.json:
 		abort(400)
@@ -28,23 +45,21 @@ def del_task():
 
 	host = str(request.json['Name'])
 	deletecommand = 'sudo vppctl delete host-interface name %s' % (host)
-	subprocess.call(deletecommand, stdout=subprocess.PIPE, shell = True)
+	subprocess.call(deletecommand,stdout=subprocess.PIPE,shell=True)
 
 	#Update json file
 	updatejsonfile = "python showint.py"
-	subprocess.call(updatejsonfile, shell = True)
+	subprocess.call(updatejsonfile,shell=True)
 
 	#Update flask
-	ncps = subprocess.Popen('cat showintresult.json', stdout=subprocess.PIPE, shell = True)
+	ncps = subprocess.Popen('cat showintresult.json',stdout=subprocess.PIPE,shell=True)
 	noutput = ncps.communicate()[0]
 	tasks = noutput
 
 	return tasks
 
-	
-	
-#Create
 @app.route('/todo/api/v1.0/tasks', methods=['POST'])
+@auth.login_required
 def create_task():
 
 	if not request.json or not 'Name' in request.json:
@@ -60,20 +75,18 @@ def create_task():
 
 	#Update json file
 	updatejsonfile = "python showint.py"
-	subprocess.call(updatejsonfile, shell = True)
+	subprocess.call(updatejsonfile,shell = True)
 
 	#Update flask
-	ncps = subprocess.Popen('cat showintresult.json', stdout=subprocess.PIPE, shell = True)
+	ncps = subprocess.Popen('cat showintresult.json',stdout=subprocess.PIPE,shell=True)
 	noutput = ncps.communicate()[0]
 	tasks = noutput
 
 	return tasks
 
 
-	
-	
-#Update
 @app.route('/todo/api/v1.0/tasks', methods=['UPDATE'])
+@auth.login_required
 def delete_task():
 
 	if not request.json or not 'Name' in request.json:

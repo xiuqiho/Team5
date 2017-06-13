@@ -1,24 +1,41 @@
 #!flask/bin/python
-from flask import Flask, jsonify, abort, request
+from flask.ext.httpauth import HTTPBasicAuth
+from flask import Flask, jsonify, abort, request, make_response
 import subprocess
 
 app = Flask(__name__)
+auth = HTTPBasicAuth()
+
+
+@auth.get_password
+def get_password(username):
+	if username == 'xiuqi':
+		return 'sti'
+	return None
+
+
+@auth.error_handler
+def unauthorized():
+	return make_response(jsonify({'error': 'Unauthorized Access'}), 403)
+
+
 
 spcs = subprocess.Popen('cat showbuffresult.json', stdout=subprocess.PIPE, shell = True)
 result = spcs.communicate()[0]
 
 buffer = result
 
-#Read
+
+
 @app.route('/todo/buffer', methods=['GET'])
+@auth.login_required
 def get_tasks():
 	return buffer
 
-	
-#Create
-@app.route('/todo/dhcp', methods=['POST'])
-def create_dhcp_client():
 
+@app.route('/todo/dhcp', methods=['POST'])
+@auth.login_required
+def create_dhcp_client():
 	if not request.json or not 'Name' in request.json:
 		abort(400)
 
@@ -32,9 +49,8 @@ def create_dhcp_client():
 
 	return ''
 
-	
-#Delete
 @app.route('/todo/dhcp', methods=['DELETE'])
+@auth.login_required
 def del_dhcp_client():
 
         if not request.json or not 'Name' in request.json:
@@ -51,9 +67,9 @@ def del_dhcp_client():
         return ''
 
 
-		
-#Update
+
 @app.route('/todo/bridge/domain', methods=['UPDATE'])
+@auth.login_required
 def update_bridge_domain():
 
 	if not request.json or not 'State' in request.json:
@@ -72,8 +88,6 @@ def update_bridge_domain():
 
 	return ''
 
-	
-	
-	
+
 if __name__ == '__main__':
 	app.run(debug=True)
