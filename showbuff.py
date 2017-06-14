@@ -13,7 +13,7 @@ file.close()
 
 
 #Setting delimiters for the fields to commas (from spaces)
-output =  os.popen("awk '{$1=$1}1' OFS=, /home/sti/showbuffresult.txt").read()
+output =  os.popen("awk '{$1=$1}1' OFS=, /home/sti/vpp/todo-api/showbuffresult.txt").read()
 
 
 
