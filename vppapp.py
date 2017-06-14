@@ -27,7 +27,15 @@ tasks = output
 @app.route('/todo/api/v1.0/tasks', methods=['GET'])
 @auth.login_required
 def get_tasks():
-        return tasks
+        
+		update= "python vpp.py"
+        subprocess.call(update,shell=True)
+
+        nsub= subprocess.Popen('cat setip.json',stdout=subprocess.PIPE,shell=True)
+        newoutput = nsub.communicate()[0]
+        tasks = newoutput
+		
+		return tasks
 
 @app.route('/todo/api/v1.0/tasks', methods=['POST'])
 @auth.login_required
