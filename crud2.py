@@ -29,7 +29,16 @@ buffer = result
 
 @app.route('/todo/buffer', methods=['GET'])
 @auth.login_required
-def get_tasks():
+def get_buffer():
+	#Update json file
+	updatejsonfile = "python showbuff.py"
+	subprocess.call(updatejsonfile,shell=True)
+
+	#Update flask
+	ncps = subprocess.Popen('cat showbuffresult.json',stdout=subprocess.PIPE,shell=True)
+	noutput = ncps.communicate()[0]
+	buffer = noutput
+	
 	return buffer
 
 

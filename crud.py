@@ -30,6 +30,15 @@ tasks = result
 @app.route('/todo/api/v1.0/tasks', methods=['GET'])
 @auth.login_required
 def get_tasks():
+	#Update json file
+	updatejsonfile = "python showint.py"
+	subprocess.call(updatejsonfile,shell=True)
+
+	#Update flask
+	ncps = subprocess.Popen('cat showintresult.json',stdout=subprocess.PIPE,shell=True)
+	noutput = ncps.communicate()[0]
+	tasks = noutput
+	
 	return tasks
 
 
@@ -56,7 +65,7 @@ def del_task():
 	noutput = ncps.communicate()[0]
 	tasks = noutput
 
-	return tasks
+	return ''
 
 @app.route('/todo/api/v1.0/tasks', methods=['POST'])
 @auth.login_required
@@ -82,7 +91,7 @@ def create_task():
 	noutput = ncps.communicate()[0]
 	tasks = noutput
 
-	return tasks
+	return ''
 
 
 @app.route('/todo/api/v1.0/tasks', methods=['UPDATE'])
@@ -113,7 +122,7 @@ def delete_task():
 	noutput = npcs.communicate()[0]
 	tasks = noutput
 
-	return tasks
+	return ''
 
 
 if __name__ == '__main__':
