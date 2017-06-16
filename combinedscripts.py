@@ -17,10 +17,7 @@ def unauthorized():
         return make_response(jsonify({'error': 'Unauthorized Access'}), 403)
 
 
-#showint (Xiu Qi)
-spcs = subprocess.Popen('cat showintresult.json',stdout=subprocess.PIPE,shell=True)
-result = spcs.communicate()[0]
-showint = result
+#Xiu Qi 1st set of CRUD
 
 @app.route('/todo/xiuqi/createint', methods=['POST'])
 @auth.login_required
@@ -124,13 +121,9 @@ def del_task():
 
 
 
-#showbuffer (Xiu Qi)
-spcs = subprocess.Popen('cat showbuffresult.json', stdout=subprocess.PIPE, shell = True)
-result = spcs.communicate()[0]
-showbuffer = result
+#Xiu QI 2nd set CRUD
 
-
-@app.route('/todo/xiuqi/createdhcp', methods=['POST'])
+@app.route('/todo/xiuqi2/createdhcp', methods=['POST'])
 @auth.login_required
 def create_dhcp_client():
 
@@ -154,7 +147,7 @@ def create_dhcp_client():
 
 
 
-@app.route('/todo/xiuqi/showbuffer', methods=['GET'])
+@app.route('/todo/xiuqi2/showbuffer', methods=['GET'])
 @auth.login_required
 def get_buffer():
 
@@ -173,7 +166,7 @@ def get_buffer():
 
 
 
-@app.route('/todo/xiuqi/updateuuflood', methods=['UPDATE'])
+@app.route('/todo/xiuqi2/updateuuflood', methods=['UPDATE'])
 @auth.login_required
 def update_bridge_domain():
 
@@ -205,7 +198,7 @@ def update_bridge_domain():
 
 
 
-@app.route('/todo/xiuqi/deldhcp', methods=['DELETE'])
+@app.route('/todo/xiuqi2/deldhcp', methods=['DELETE'])
 @auth.login_required
 def del_dhcp_client():
 
@@ -231,11 +224,7 @@ def del_dhcp_client():
 
 
 
-#showiparp (Jing Ming)
-sp= subprocess.Popen('cat setip.json', stdout=subprocess.PIPE,shell=True)
-output = sp.communicate()[0]
-showiparp = output
-
+#Jing Ming 1st CRUD
 
 
 @app.route('/todo/jingming/setiparp', methods=['POST'])
@@ -353,6 +342,79 @@ def delete_iparp():
 
 
 
+#Jian Yuan 1st set CRUD
+
+@app.route('/todo/jianyuan/createloop', methods=['POST'])
+@auth.login_required
+def create_loop():
+	cloop = 'sudo vppctl loopback create-interface'
+	subprocess.call(cloop,shell=True)
+
+	#display loopback interfaces
+	nchild = subprocess.Popen('sudo vppctl show int',stdout=subprocess.PIPE,shell=True)
+	noutput = nchild.communicate()[0]
+	showinterfaces = noutput
+	return showinterfaces
+
+
+
+
+@app.route('/todo/jianyuan/showbridgedomains', methods=['GET'])
+@auth.login_required
+def get_bridgedomain():
+	#update json file
+        update = "python combined.py"
+        subprocess.call(update,shell=True)
+        #update flask
+        nchild = subprocess.Popen('cat bridge.json',stdout=subprocess.PIPE,shell=True)
+        noutput = nchild.communicate()[0]
+        showbridgedomains = noutput
+	return showbridgedomains
+
+
+
+
+@app.route('/todo/jianyuan/updateforward', methods=['PUT'])
+@auth.login_required
+def update_forward():
+	if not request.json or not 'id' in request.json:
+		abort(400)
+	task = {
+		'id': request.json['id'],
+		'state': request.json['state']
+	}
+	bridge = str(request.json['id'])
+	state = str(request.json['state'])
+	if state == "enable":
+		state = ""
+	upbridge = 'sudo vppctl set bridge-domain forward %s %s' % (bridge, state)
+	subprocess.call(upbridge,shell=True)
+	#update json file
+	update = "python combined.py"
+	subprocess.call(update,shell=True)
+	#update flask
+	nchild = subprocess.Popen('cat bridge.json',stdout=subprocess.PIPE,shell=True)
+	noutput = nchild.communicate()[0]
+	displaybridge = noutput
+	return displaybridge
+
+
+
+
+@app.route('/todo/jianyuan/delloop', methods=['DELETE'])
+@auth.login_required
+def delete_loop():
+	if not request.json or not 'Name' in request.json:
+		abort(400)
+	task = {'Name': request.json['Name']}
+	loopint = str(request.json['Name'])
+	dloop = 'sudo vppctl loopback delete-interface intfc %s' % (loopint)
+	subprocess.call(dloop,shell=True)
+	#display loopback interfaces
+        nchild = subprocess.Popen('sudo vppctl show int',stdout=subprocess.PIPE,shell=True)
+        noutput = nchild.communicate()[0]
+        showinterfaces = noutput
+        return showinterfaces
 
 
 
@@ -360,20 +422,81 @@ def delete_iparp():
 
 
 
+#Jian Yuan 2nd set CRUD
+
+@app.route('/todo/jianyuan2/createvxlan', methods=['POST'])
+@auth.login_required
+def create_vxlan():
+	if not request.json:
+                abort(400)
+	task = {'src': request.json['src'], 'dst': request.json['dst'], 'vni': request.json['vni']}
+	src = str(request.json['src'])
+	dst = str(request.json['dst'])
+	vni = str(request.json['vni'])
+	cvxlan = 'sudo vppctl create vxlan tunnel src %s dst %s vni %s' % (src, dst, vni)
+	subprocess.call(cvxlan,shell=True)
+	#display all vxlan tunnels
+	nchild = subprocess.Popen('sudo vppctl show vxlan tunnel',stdout=subprocess.PIPE,shell=True)
+	noutput = nchild.communicate()[0]
+	showvxlantunnels = noutput
+	return showvxlantunnels
+
+
+
+@app.route('/todo/jianyuan2/showhardwares', methods=['GET'])
+@auth.login_required
+def get_showhardwares():
+	#update json file
+        update = "python combined.py"
+        subprocess.call(update,shell=True)
+        #update flask
+        nchild = subprocess.Popen('cat show.json',stdout=subprocess.PIPE,shell=True)
+        noutput = nchild.communicate()[0]
+        showhardwares = noutput
+        return showhardwares
+
+
+
+@app.route('/todo/jianyuan2/updateterm', methods=['PUT'])
+@auth.login_required
+def update_term():
+        if not request.json or not 'id' in request.json:
+                abort(400)
+        task = {'id': request.json['id'], 'state': request.json['state']}
+        bridge = str(request.json['id'])
+	state = str(request.json['state'])
+	if state == "enable":
+		state = ""
+        upbridge = 'sudo vppctl set bridge-domain arp term %s %s' % (bridge, state)
+        subprocess.call(upbridge,shell=True)
+	#update json file
+        update = "python combined.py"
+        subprocess.call(update,shell=True)
+        #update flask
+        nchild = subprocess.Popen('cat bridge.json',stdout=subprocess.PIPE,shell=True)
+        noutput = nchild.communicate()[0]
+        displaybridge = noutput
+        return displaybridge
 
 
 
 
-
-
-
-
-
-
-
-
-
-
+@app.route('/todo/jianyuan2/delvxlan', methods=['DELETE'])
+@auth.login_required
+def delete_vxlan():
+	if not request.json:
+                abort(400)
+        task = {'src': request.json['src'], 'dst': request.json['dst'], 'vni': request.json['vni']}
+        src = str(request.json['src'])
+        dst = str(request.json['dst'])
+        vni = str(request.json['vni'])
+        cvxlan = 'sudo vppctl create vxlan tunnel src %s dst %s vni %s del' % (src, dst, vni)
+        subprocess.call(cvxlan,shell=True)
+	#display all vxlan tunnels
+        nchild = subprocess.Popen('sudo vppctl show vxlan tunnel',stdout=subprocess.PIPE,shell=True)
+        noutput = nchild.communicate()[0]
+        showvxlantunnels = noutput
+        return showvxlantunnels
 
 
 
