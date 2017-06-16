@@ -82,7 +82,7 @@ curl -u team5:sti -i -H "Content-Type: application/json" -X DELETE -d '{"Name":"
 				<- Jing Ming 1st set CRUD ->
 
 Create:
------------------ Do these commands first (for vpp0, vpp1, vpp2 and so on) ................
+----------------- Do these commands first (for loop0 and loop1) ................
 sudo vppctl create loopback interface            (do this x2 to create loop0 and loop1)
 sudo vppctl set interface state loop0 up
 sudo vppctl set interface state loop1 up
