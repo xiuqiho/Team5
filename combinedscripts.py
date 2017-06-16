@@ -231,6 +231,151 @@ def del_dhcp_client():
 
 
 
+#showiparp (Jing Ming)
+sp= subprocess.Popen('cat setip.json', stdout=subprocess.PIPE,shell=True)
+output = sp.communicate()[0]
+showiparp = output
+
+
+
+@app.route('/todo/jingming/setiparp', methods=['POST'])
+@auth.login_required
+def create_iparp():
+
+        task = {
+                'Flags': request.json['Flags'],
+                'IP4': request.json['IP4'],
+                'Interface': request.json['Interface'],
+                'Ethernet': request.json['Ethernet']
+        }
+
+        flag = str(request.json['Flags'])
+        ipaddr = str(request.json['IP4'])
+        intf = str(request.json['Interface'])
+        ent = str(request.json['Ethernet'])
+
+        put= "sudo vppctl set ip arp %s %s %s %s" % (flag,intf, ipaddr, ent)
+        sp2= subprocess.Popen(put,shell=True,stdout=subprocess.PIPE)
+        noutput= sp2.communicate()[0]
+
+        update= "python combined.py"
+        subprocess.call(update,shell=True)
+
+        nsub= subprocess.Popen('cat setip.json',stdout=subprocess.PIPE,shell=True)
+        newoutput = nsub.communicate()[0]
+        showiparp = newoutput
+
+        return showiparp
+
+
+
+
+@app.route('/todo/jingming/showiparp', methods=['GET'])
+@auth.login_required
+def get_iparp():
+
+        update= "python combined.py"
+        subprocess.call(update,shell=True)
+
+        nsub= subprocess.Popen('cat setip.json',stdout=subprocess.PIPE,shell=True)
+        newoutput = nsub.communicate()[0]
+        showiparp = newoutput
+
+        return showiparp
+
+
+
+
+@app.route('/todo/jingming/updatelearn', methods=['PUT'])
+@auth.login_required
+def update_learn():
+
+        task = {
+                'ID': request.json['ID'],
+                'State': request.json['State']
+        }
+
+
+        ID = str(request.json['ID'])
+        state = str(request.json['State'])
+
+	if state == "enable":
+                state = ""
+
+        result = "sudo vppctl set bridge-domain learn %s %s" % (ID, state)
+        subproc = subprocess.Popen(result,shell=True,stdout=subprocess.PIPE)
+        oput= subproc.communicate()[0]
+
+	update= "python combined.py"
+        subprocess.call(update,shell=True)
+
+        nsub= subprocess.Popen('sudo vppctl show bridge domain',stdout=subprocess.PIPE,shell=True)
+        newoutput = nsub.communicate()[0]
+        showbridgedomain = newoutput
+
+        return showbridgedomain
+
+
+
+
+@app.route('/todo/jingming/deleteiparp', methods=['DELETE'])
+@auth.login_required
+def delete_iparp():
+
+
+        task = {
+                'Flags': request.json['Flags'],
+                'IP4': request.json['IP4'],
+		'Interface': request.json['Interface'],
+                'Ethernet': request.json['Ethernet']
+        }
+
+        flag = str(request.json['Flags'])
+        ipaddr = str(request.json['IP4'])
+	intf = str(request.json['Interface'])
+        ent = str(request.json['Ethernet'])
+
+
+        put= "sudo vppctl set ip arp %s delete %s %s %s" % (flag,intf, ipaddr, ent)
+	sp2= subprocess.Popen(put,shell=True,stdout=subprocess.PIPE)
+        noutput= sp2.communicate()[0]
+
+        update= "python combined.py"
+        subprocess.call(update,shell=True)
+
+        nsub= subprocess.Popen('cat setip.json',stdout=subprocess.PIPE,shell=True)
+        newoutput = nsub.communicate()[0]
+        showiparp = newoutput
+
+        return showiparp
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
