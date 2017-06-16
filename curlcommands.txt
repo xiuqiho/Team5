@@ -1,0 +1,149 @@
+=====================================================================================================================================================
+				<- Xiu Qi 1st set CRUD ->
+
+Create:
+
+----------------- Do these commands first (for vpp0, vpp1, vpp2 and so on) ................
+sudo ip netns add ns0
+sudo ip link add vpp0 type veth peer name vethns0
+sudo ip link set vethns0 netns ns0
+sudo ip netns exec ns0 ip link set lo up
+sudo ip netns exec ns0 ip link set vethns0 up
+sudo ip netns exec ns0 ip addr add 2001::1/64 dev vethns0
+sudo ip netns exec ns0 ip addr add 10.0.0.1/24 dev vethns0
+sudo ip netns exec ns0 ethtool -K vethns0 rx off tx off
+ip link set vpp0 up
+
+sudo ip netns add ns1
+sudo ip link add vpp1 type veth peer name vethns1
+sudo ip link set vethns1 netns ns1
+sudo ip netns exec ns1 ip link set lo up
+sudo ip netns exec ns1 ip link set vethns1 up
+sudo ip netns exec ns1 ip addr add 2001::2/64 dev vethns1
+sudo ip netns exec ns1 ip addr add 10.0.0.2/24 dev vethns1
+sudo ip netns exec ns1 ethtool -K vethns1 rx off tx off
+sudo ip link set vpp1 up
+
+sudo ip netns add ns2
+sudo ip link add vpp2 type veth peer name vethns2
+sudo ip link set vethns2 netns ns2
+sudo ip netns exec ns2 ip link set lo up
+sudo ip netns exec ns2 ip link set vethns2 up
+sudo ip netns exec ns2 ip addr add 2001::3/64 dev vethns2
+sudo ip netns exec ns2 ip addr add 10.0.0.3/24 dev vethns2
+sudo ip netns exec ns2 ethtool -K vethns2 rx off tx off
+sudo ip link set vpp2 up
+
+curl -u team5:sti -i -H "Content-Type: application/json" -X POST -d '{"Name":"vpp0"}' http://localhost:5000/todo/xiuqi/createint
+curl -u team5:sti -i -H "Content-Type: application/json" -X POST -d '{"Name":"vpp1"}' http://localhost:5000/todo/xiuqi/createint
+curl -u team5:sti -i -H "Content-Type: application/json" -X POST -d '{"Name":"vpp2"}' http://localhost:5000/todo/xiuqi/createint
+
+********************************************************************************************
+Read:
+curl -u team5:sti -i http://localhost:5000/todo/xiuqi/showint
+
+********************************************************************************************
+Update:
+curl -u team5:sti -i -H "Content-Type: application/json" -X UPDATE -d '{"Name":"host-vpp0","State":"up"}' http://localhost:5000/todo/xiuqi/updateint
+curl -u team5:sti -i -H "Content-Type: application/json" -X UPDATE -d '{"Name":"host-vpp1","State":"up"}' http://localhost:5000/todo/xiuqi/updateint
+curl -u team5:sti -i -H "Content-Type: application/json" -X UPDATE -d '{"Name":"host-vpp2","State":"up"}' http://localhost:5000/todo/xiuqi/updateint
+
+********************************************************************************************
+Delete:
+curl -u team5:sti -i -H "Content-Type: application/json" -X DELETE -d '{"Name":"vpp0"}' http://localhost:5000/todo/xiuqi/deleteint
+curl -u team5:sti -i -H "Content-Type: application/json" -X DELETE -d '{"Name":"vpp1"}' http://localhost:5000/todo/xiuqi/deleteint
+curl -u team5:sti -i -H "Content-Type: application/json" -X DELETE -d '{"Name":"vpp2"}' http://localhost:5000/todo/xiuqi/deleteint
+
+=====================================================================================================================================================
+
+				<- Xiu Qi 2nd set CRUD ->
+
+Create:
+curl -u team5:sti -i -H "Content-Type: application/json" -X POST -d '{"Name":"host-vpp0"}' http://localhost:5000/todo/xiuqi2/createdhcp
+curl -u team5:sti -i -H "Content-Type: application/json" -X POST -d '{"Name":"host-vpp1"}' http://localhost:5000/todo/xiuqi2/createdhcp
+curl -u team5:sti -i -H "Content-Type: application/json" -X POST -d '{"Name":"host-vpp2"}' http://localhost:5000/todo/xiuqi2/createdhcp
+******************************************************************************************** 
+Read:
+curl -u team5:sti -i http://localhost:5000/todo/xiuqi2/showbuffer
+
+********************************************************************************************
+Update:
+curl -u team5:sti -i -H "Content-Type: application/json" -X UPDATE -d '{"ID":"0","State":"enable"}' http://localhost:5000/todo/xiuqi2/updateuuflood
+curl -u team5:sti -i -H "Content-Type: application/json" -X UPDATE -d '{"ID":"0","State":"disable"}' http://localhost:5000/todo/xiuqi2/updateuuflood
+
+********************************************************************************************
+Delete:
+curl -u team5:sti -i -H "Content-Type: application/json" -X DELETE -d '{"Name":"host-vpp0"}' http://localhost:5000/todo/xiuqi2/deldhcp
+curl -u team5:sti -i -H "Content-Type: application/json" -X DELETE -d '{"Name":"host-vpp1"}' http://localhost:5000/todo/xiuqi2/deldhcp
+curl -u team5:sti -i -H "Content-Type: application/json" -X DELETE -d '{"Name":"host-vpp2"}' http://localhost:5000/todo/xiuqi2/deldhcp
+
+=====================================================================================================================================================
+
+				<- Jing Ming 1st set CRUD ->
+
+Create:
+----------------- Do these commands first (for vpp0, vpp1, vpp2 and so on) ................
+sudo vppctl create loopback interface            (do this x2 to create loop0 and loop1)
+sudo vppctl set interface state loop0 up
+sudo vppctl set interface state loop1 up
+
+curl -u team5:sti -i -H "Content-Type: application/json" -X POST -d '{"Flags":"static","IP4":"192.168.100.100","Interface":"loop0","Ethernet":"dead.beef.babe"}' http://localhost:5000/todo/jingming/setiparp
+curl -u team5:sti -i -H "Content-Type: application/json" -X POST -d '{"Flags":"static","IP4":"192.168.200.100","Interface":"loop1","Ethernet":"dead.beef.babe"}' http://localhost:5000/todo/jingming/setiparp
+
+********************************************************************************************
+Read:
+curl -u team5:sti -i http://localhost:5000/todo/jingming/showiparp
+
+********************************************************************************************
+Update:
+curl -u team5:sti -i -H "Content-Type: application/json" -X PUT -d '{"ID":"0","State":"enable"}' http://localhost:5000/todo/jingming/updatelearn
+curl -u team5:sti -i -H "Content-Type: application/json" -X PUT -d '{"ID":"0","State":"disable"}' http://localhost:5000/todo/jingming/updatelearn
+
+********************************************************************************************
+Delete:
+curl -u team5:sti -i -H "Content-Type: application/json" -X DELETE -d '{"Flags":"static","IP4":"192.168.100.100","Interface":"loop0","Ethernet":"dead.beef.babe"}' http://localhost:5000/todo/jingming/deleteiparp
+curl -u team5:sti -i -H "Content-Type: application/json" -X DELETE -d '{"Flags":"static","IP4":"192.168.200.100","Interface":"loop1","Ethernet":"dead.beef.babe"}' http://localhost:5000/todo/jingming/deleteiparp
+
+=====================================================================================================================================================
+
+				<- Jian Yuan 1st set CRUD ->
+
+Create:
+curl -u team5:sti -i -H "Content-Type: application" -X POST http://localhost:5000/todo/jianyuan/createloop
+
+********************************************************************************************
+Read:
+curl -u team5:sti -i http://localhost:5000/todo/jianyuan/showbridgedomains
+
+********************************************************************************************
+Update:
+curl -u team5:sti -i -H "Content-Type: application/json" -X PUT -d '{"id":"0","state":"enable"}' http://localhost:5000/todo/jianyuan/updateforward
+curl -u team5:sti -i -H "Content-Type: application/json" -X PUT -d '{"id":"0","state":"disable"}' http://localhost:5000/todo/jianyuan/updateforward
+
+********************************************************************************************
+Delete:
+curl -u team5:sti -i -H "Content-Type: application/json" -X DELETE -d '{"Name":"loop0"}' http://localhost:5000/todo/jianyuan/delloop
+curl -u team5:sti -i -H "Content-Type: application/json" -X DELETE -d '{"Name":"loop1"}' http://localhost:5000/todo/jianyuan/delloop
+curl -u team5:sti -i -H "Content-Type: application/json" -X DELETE -d '{"Name":"loop2"}' http://localhost:5000/todo/jianyuan/delloop
+=====================================================================================================================================================
+
+                                <- Jian Yuan 2nd set CRUD ->
+
+Create:
+curl -u team5:sti -i -H "Content-Type: application/json" -X POST -d '{"src":"192.168.1.1","dst":"192.168.100.100","vni":"13"}' http://localhost:5000/todo/jianyuan2/createvxlan
+curl -u team5:sti -i -H "Content-Type: application/json" -X POST -d '{"src":"192.168.100.100","dst":"192.168.1.1","vni":"13"}' http://localhost:5000/todo/jianyuan2/createvxlan
+
+********************************************************************************************
+Read:
+curl -u team5:sti -i http://localhost:5000/todo/jianyuan2/showhardwares
+
+********************************************************************************************
+Update:
+curl -u team5:sti -i -H "Content-Type: application/json" -X PUT -d '{"id":"0","state":"enable"}' http://localhost:5000/todo/jianyuan2/updateterm
+curl -u team5:sti -i -H "Content-Type: application/json" -X PUT -d '{"id":"0","state":"disable"}' http://localhost:5000/todo/jianyuan2/updateterm
+
+********************************************************************************************
+Delete:
+curl -u team5:sti -i -H "Content-Type: application/json" -X DELETE -d '{"src":"192.168.1.1","dst":"192.168.100.100","vni":"13"}' http://localhost:5000/todo/jianyuan2/delvxlan
+curl -u team5:sti -i -H "Content-Type: application/json" -X DELETE -d '{"src":"192.168.100.100","dst":"192.168.1.1","vni":"13"}' http://localhost:5000/todo/jianyuan2/delvxlan
+=====================================================================================================================================================
