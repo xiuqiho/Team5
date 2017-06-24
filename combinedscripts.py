@@ -168,7 +168,7 @@ def get_buffer():
 
 @app.route('/todo/xiuqi2/updateuuflood', methods=['UPDATE'])
 @auth.login_required
-def update_bridge_domain():
+def update_uuflood():
 
         if not request.json or not 'State' in request.json:
                 abort(400)
@@ -498,6 +498,91 @@ def delete_vxlan():
         showvxlantunnels = noutput
         return showvxlantunnels
 
+
+
+
+
+
+#Function for update (bridge domains) including all types of bridge-domain: Done by Xiu Qi for the team
+@app.route('/todo/Team5/updatebridgedomain', methods=['UPDATE'])
+@auth.login_required
+def update_bridgedomain():
+
+        if not request.json:
+                abort(400)
+
+        task = {
+                'ID': request.json['ID'],
+		'learn': request.json['learn'],
+		'forward': request.json['forward'],
+		'uuflood': request.json['uuflood'],
+		'flood': request.json['flood'],
+                'arpterm': request.json['arpterm']
+        }
+
+        intid = str(request.json['ID'])
+	learnstate = str(request.json['learn'])
+	forwardstate = str(request.json['forward'])
+	uufloodstate = str(request.json['uuflood'])
+	floodstate = str(request.json['flood'])
+        arptermstate = str(request.json['arpterm'])
+
+	#learn
+        if learnstate == "enable":
+                learnstate = ""
+		updatelearn = 'sudo vppctl set bridge-domain learn %s %s' % (intid,learnstate)
+		subprocess.call(updatelearn, stdout=subprocess.PIPE, shell = True)
+	elif learnstate == "disable":
+		updatelearn = 'sudo vppctl set bridge-domain learn %s %s' %  (intid,learnstate)
+		subprocess.call(updatelearn, stdout=subprocess.PIPE, shell = True)
+
+	#forward
+	if forwardstate == "enable":
+		forwardstate = ""
+		updateforward = 'sudo vppctl set bridge-domain forward %s %s' % (intid,forwardstate)
+		subprocess.call(updateforward, stdout=subprocess.PIPE, shell = True)
+	elif forwardstate == "disable":
+		updateforward = 'sudo vppctl set bridge-domain forward %s %s' % (intid,forwardstate)
+                subprocess.call(updateforward, stdout=subprocess.PIPE, shell = True)
+
+	#uu-flood
+	if uufloodstate == "enable":
+		uufloodstate = ""
+		updateuuflood = 'sudo vppctl set bridge-domain uu-flood %s %s' % (intid,uufloodstate)
+		subprocess.call(updateuuflood, stdout=subprocess.PIPE, shell = True)
+	elif uufloodstate == "disable":
+		updateuuflood = 'sudo vppctl set bridge-domain uu-flood %s %s' % (intid,uufloodstate)
+                subprocess.call(updateuuflood, stdout=subprocess.PIPE, shell = True)
+
+
+	#flood
+	if floodstate == "enable":
+		floodstate = ""
+		updateflood = 'sudo vppctl set bridge-domain flood %s %s' % (intid,floodstate)
+		subprocess.call(updateflood, stdout=subprocess.PIPE, shell = True)
+	elif floodstate == "disable":
+		updateflood = 'sudo vppctl set bridge-domain flood %s %s' % (intid,floodstate)
+                subprocess.call(updateflood, stdout=subprocess.PIPE, shell = True)
+
+
+	#arpterm
+	if arptermstate == "enable":
+		arptermstate = ""
+		updatearpterm = 'sudo vppctl set bridge-domain arp term %s %s' % (intid,arptermstate)
+		subprocess.call(updatearpterm, stdout=subprocess.PIPE, shell = True)
+	elif arptermstate == "disable":
+		updatearpterm = 'sudo vppctl set bridge-domain arp term %s %s' % (intid,arptermstate)
+		subprocess.call(updatearpterm, stdout=subprocess.PIPE, shell = True)
+
+
+        #Display effect of the commands
+        cps = subprocess.Popen('sudo vppctl show bridge domain', stdout=subprocess.PIPE, shell = True)
+        ot = cps.communicate()[0]
+        displaybridgedomain = ot
+
+        return displaybridgedomain
+
+#end of combined update bridge-domain commands
 
 
 
