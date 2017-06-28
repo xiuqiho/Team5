@@ -179,21 +179,23 @@ def update_uuflood():
         }
 
         intid = str(request.json['ID'])
-        intstate = str(request.json['State'])
+        uufloodstate = str(request.json['State'])
 
-	if intstate == "enable":
-		intstate = ""
-
-
-        update = 'sudo vppctl set bridge-domain uu-flood %s %s' % (intid,intstate)
-        subprocess.call(update, stdout=subprocess.PIPE, shell = True)
+	if uufloodstate == "enable":
+		uufloodstate = ""
+		updateuuflood = 'sudo vppctl set bridge-domain uu-flood %s %s' % (intid,uufloodstate)
+		subprocess.call(updateuuflood, stdout=subprocess.PIPE, shell = True)
+	elif uufloodstate == "disable":
+		updateuuflood = 'sudo vppctl set bridge-domain uu-flood %s %s' % (intid,uufloodstate)
+                subprocess.call(updateuuflood, stdout=subprocess.PIPE, shell = True)
 
 	#Display effect of the commands
-        cps = subprocess.Popen('sudo vppctl show bridge domain', stdout=subprocess.PIPE, shell = True)
+        cps = subprocess.Popen('sudo vppctl show bridge-domain', stdout=subprocess.PIPE, shell = True)
         ot = cps.communicate()[0]
         displaybridgedomain = ot
 
         return displaybridgedomain
+
 
 
 
@@ -298,7 +300,7 @@ def update_learn():
 	update= "python combined.py"
         subprocess.call(update,shell=True)
 
-        nsub= subprocess.Popen('sudo vppctl show bridge domain',stdout=subprocess.PIPE,shell=True)
+        nsub= subprocess.Popen('sudo vppctl show bridge-domain',stdout=subprocess.PIPE,shell=True)
         newoutput = nsub.communicate()[0]
         showbridgedomain = newoutput
 
@@ -576,7 +578,7 @@ def update_bridgedomain():
 
 
         #Display effect of the commands
-        cps = subprocess.Popen('sudo vppctl show bridge domain', stdout=subprocess.PIPE, shell = True)
+        cps = subprocess.Popen('sudo vppctl show bridge-domain', stdout=subprocess.PIPE, shell = True)
         ot = cps.communicate()[0]
         displaybridgedomain = ot
 

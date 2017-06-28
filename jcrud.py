@@ -1,5 +1,5 @@
 #!flask/bin/python 
-from flask.ext.httpauth import HTTPBasicAuth
+from flask_httpauth import HTTPBasicAuth
 from flask import Flask, jsonify, abort, request, make_response
 import subprocess
 
@@ -8,7 +8,7 @@ auth = HTTPBasicAuth()
 
 @auth.get_password
 def get_password(username):
-        if username == 'xiuqi':
+        if username == 'team5':
                 return 'sti'
         return None
 
@@ -16,53 +16,10 @@ def get_password(username):
 def unauthorized():
         return make_response(jsonify({'error': 'Unauthorized Access'}), 403)
 
-spcs = subprocess.Popen('cat showintresult.json',stdout=subprocess.PIPE,shell=True)
-result = spcs.communicate()[0]
 
-tasks = result
+#Xiu Qi 1st set of CRUD
 
-
-
-@app.route('/todo/api/v1.0/tasks', methods=['GET'])
-@auth.login_required
-def get_tasks():
-        #Update json file
-        updatejsonfile = "python showint.py"
-        subprocess.call(updatejsonfile,shell=True)
-
-        #Update flask
-        ncps = subprocess.Popen('cat showintresult.json',stdout=subprocess.PIPE,shell=True)
-        noutput = ncps.communicate()[0]
-        tasks = noutput
-
-        return tasks
-
-@app.route('/todo/api/v1.0/tasks', methods=['DELETE'])
-@auth.login_required
-def del_task():
-        if not request.json or not 'Name' in request.json:
-                abort(400)
-
-        task = {
-                'Name': request.json['Name']
-        }
-
-        host = str(request.json['Name'])
-        deletecommand = 'sudo vppctl delete host-interface name %s' % (host)
-        subprocess.call(deletecommand,stdout=subprocess.PIPE,shell=True)
-
-        #Update json file
-        updatejsonfile = "python showint.py"
-        subprocess.call(updatejsonfile,shell=True)
-
-        #Update flask
-        ncps = subprocess.Popen('cat showintresult.json',stdout=subprocess.PIPE,shell=True)
-        noutput = ncps.communicate()[0]
-        tasks = noutput
-
-        return ''
-
-@app.route('/todo/api/v1.0/tasks', methods=['POST'])
+@app.route('/todo/xiuqi/createint', methods=['POST'])
 @auth.login_required
 def create_task():
 
@@ -78,17 +35,34 @@ def create_task():
         subprocess.call(addcommand,stdout=subprocess.PIPE, shell = True)
 
         #Update json file
-        updatejsonfile = "python showint.py"
+        updatejsonfile = "python combined.py"
         subprocess.call(updatejsonfile,shell = True)
 
         #Update flask
         ncps = subprocess.Popen('cat showintresult.json',stdout=subprocess.PIPE,shell=True)
         noutput = ncps.communicate()[0]
-        tasks = noutput
+        showint = noutput
 
-        return ''
+        return showint
 
-@app.route('/todo/api/v1.0/tasks', methods=['UPDATE'])
+
+@app.route('/todo/xiuqi/showint', methods=['GET'])
+@auth.login_required
+def get_tasks():
+
+        #Update json file
+        updatejsonfile = "python combined.py"
+        subprocess.call(updatejsonfile,shell=True)
+
+        #Update flask
+        ncps = subprocess.Popen('cat showintresult.json',stdout=subprocess.PIPE,shell=True)
+        noutput = ncps.communicate()[0]
+        showint = noutput
+
+        return showint
+
+
+@app.route('/todo/xiuqi/updateint', methods=['UPDATE'])
 @auth.login_required
 def update_task():
 
@@ -107,16 +81,43 @@ def update_task():
         addint = 'sudo vppctl set interface state %s %s' % (name, state)
         subprocess.call(addint, stdout=subprocess.PIPE, shell = True)
 
-        #Update JSON File
-        updatejsonfile = "python showint.py"
-        subprocess.call(updatejsonfile, shell = True)
+	#Update json file
+        updatejsonfile = "python combined.py"
+        subprocess.call(updatejsonfile,shell=True)
 
-        #Update Flask
-        npcs = subprocess.Popen('cat showintresult.json', stdout=subprocess.PIPE, shell = True)
-        noutput = npcs.communicate()[0]
-        tasks = noutput
+        #Update flask
+        ncps = subprocess.Popen('cat showintresult.json',stdout=subprocess.PIPE,shell=True)
+        noutput = ncps.communicate()[0]
+        showint = noutput
 
-        return ''
+        return showint
+
+
+@app.route('/todo/xiuqi/deleteint', methods=['DELETE'])
+@auth.login_required
+def del_task():
+        if not request.json or not 'Name' in request.json:
+                abort(400)
+
+        task = {
+                'Name': request.json['Name']
+        }
+
+        host = str(request.json['Name'])
+        deletecommand = 'sudo vppctl delete host-interface name %s' % (host)
+        subprocess.call(deletecommand,stdout=subprocess.PIPE,shell=True)
+
+	#Update json file
+        updatejsonfile = "python combined.py"
+        subprocess.call(updatejsonfile,shell=True)
+
+        #Update flask
+        ncps = subprocess.Popen('cat showintresult.json',stdout=subprocess.PIPE,shell=True)
+        noutput = ncps.communicate()[0]
+        showint = noutput
+
+        return showint
 
 if __name__ == '__main__':
-        app.run(debug=True)
+    app.run(debug=True)
+
