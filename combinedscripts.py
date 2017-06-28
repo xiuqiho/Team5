@@ -62,7 +62,7 @@ def get_tasks():
         return showint
 
 
-@app.route('/todo/xiuqi/updateint', methods=['UPDATE'])
+@app.route('/todo/xiuqi/updateint', methods=['PUT'])
 @auth.login_required
 def update_task():
 
@@ -166,7 +166,7 @@ def get_buffer():
 
 
 
-@app.route('/todo/xiuqi2/updateuuflood', methods=['UPDATE'])
+@app.route('/todo/xiuqi2/updateuuflood', methods=['PUT'])
 @auth.login_required
 def update_uuflood():
 
@@ -506,7 +506,7 @@ def delete_vxlan():
 
 
 #Function for update (bridge domains) including all types of bridge-domain: Done by Xiu Qi for the team
-@app.route('/todo/Team5/updatebridgedomain', methods=['UPDATE'])
+@app.route('/todo/Team5/updatebridgedomain', methods=['PUT'])
 @auth.login_required
 def update_bridgedomain():
 

@@ -44,9 +44,9 @@ curl -u team5:sti -i http://localhost:5000/todo/xiuqi/showint
 
 ********************************************************************************************
 Update:
-curl -u team5:sti -i -H "Content-Type: application/json" -X UPDATE -d '{"Name":"host-vpp0","State":"up"}' http://localhost:5000/todo/xiuqi/updateint
-curl -u team5:sti -i -H "Content-Type: application/json" -X UPDATE -d '{"Name":"host-vpp1","State":"up"}' http://localhost:5000/todo/xiuqi/updateint
-curl -u team5:sti -i -H "Content-Type: application/json" -X UPDATE -d '{"Name":"host-vpp2","State":"up"}' http://localhost:5000/todo/xiuqi/updateint
+curl -u team5:sti -i -H "Content-Type: application/json" -X PUT -d '{"Name":"host-vpp0","State":"up"}' http://localhost:5000/todo/xiuqi/updateint
+curl -u team5:sti -i -H "Content-Type: application/json" -X PUT -d '{"Name":"host-vpp1","State":"up"}' http://localhost:5000/todo/xiuqi/updateint
+curl -u team5:sti -i -H "Content-Type: application/json" -X PUT -d '{"Name":"host-vpp2","State":"up"}' http://localhost:5000/todo/xiuqi/updateint
 
 ********************************************************************************************
 Delete:
@@ -68,8 +68,8 @@ curl -u team5:sti -i http://localhost:5000/todo/xiuqi2/showbuffer
 
 ********************************************************************************************
 Update:
-curl -u team5:sti -i -H "Content-Type: application/json" -X UPDATE -d '{"ID":"0","State":"enable"}' http://localhost:5000/todo/xiuqi2/updateuuflood
-curl -u team5:sti -i -H "Content-Type: application/json" -X UPDATE -d '{"ID":"0","State":"disable"}' http://localhost:5000/todo/xiuqi2/updateuuflood
+curl -u team5:sti -i -H "Content-Type: application/json" -X PUT -d '{"ID":"0","State":"enable"}' http://localhost:5000/todo/xiuqi2/updateuuflood
+curl -u team5:sti -i -H "Content-Type: application/json" -X PUT -d '{"ID":"0","State":"disable"}' http://localhost:5000/todo/xiuqi2/updateuuflood
 
 ********************************************************************************************
 Delete:
@@ -150,13 +150,13 @@ curl -u team5:sti -i -H "Content-Type: application/json" -X DELETE -d '{"src":"1
 
 				<- Update all bridge domains at once ->
 #enable all
-curl -u team5:sti -i -H "Content-Type: application/json" -X UPDATE -d '{"ID":"0","learn":"enable","forward":"enable","uuflood":"enable","flood":"enable","arpterm":"enable"}' http://localhost:5000/todo/Team5/updatebridgedomain
+curl -u team5:sti -i -H "Content-Type: application/json" -X PUT -d '{"ID":"0","learn":"enable","forward":"enable","uuflood":"enable","flood":"enable","arpterm":"enable"}' http://localhost:5000/todo/Team5/updatebridgedomain
 
 #disable all
-curl -u team5:sti -i -H "Content-Type: application/json" -X UPDATE -d '{"ID":"0","learn":"disable","forward":"disable","uuflood":"disable","flood":"disable","arpterm":"disable"}' http://localhost:5000/todo/Team5/updatebridgedomain
+curl -u team5:sti -i -H "Content-Type: application/json" -X PUT -d '{"ID":"0","learn":"disable","forward":"disable","uuflood":"disable","flood":"disable","arpterm":"disable"}' http://localhost:5000/todo/Team5/updatebridgedomain
 
 #enable randomly
-curl -u team5:sti -i -H "Content-Type: application/json" -X UPDATE -d '{"ID":"0","learn":"enable","forward":"disable","uuflood":"enable","flood":"disable","arpterm":"enable"}' http://localhost:5000/todo/Team5/updatebridgedomain
+curl -u team5:sti -i -H "Content-Type: application/json" -X PUT -d '{"ID":"0","learn":"enable","forward":"disable","uuflood":"enable","flood":"disable","arpterm":"enable"}' http://localhost:5000/todo/Team5/updatebridgedomain
 
 =====================================================================================================================================================
 

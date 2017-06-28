@@ -62,7 +62,7 @@ def get_tasks():
         return showint
 
 
-@app.route('/todo/xiuqi/updateint', methods=['UPDATE'])
+@app.route('/todo/xiuqi/updateint', methods=['PUT'])
 @auth.login_required
 def update_task():
 

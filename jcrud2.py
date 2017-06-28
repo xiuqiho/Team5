@@ -63,7 +63,7 @@ def get_buffer():
 
 
 
-@app.route('/todo/xiuqi2/updateuuflood', methods=['UPDATE'])
+@app.route('/todo/xiuqi2/updateuuflood', methods=['PUT'])
 @auth.login_required
 def update_uuflood():
 
